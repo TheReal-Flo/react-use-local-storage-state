@@ -1,0 +1,39 @@
+{
+  "name": "react-use-local-storage-state",
+  "version": "1.0.0",
+  "description": "Like useState, but it also saves in localStorage",
+  "main": "dist/useLocalStorageState.js",
+  "module": "dist/useLocalStorageState.js",
+  "types": "dist/useLocalStorageState.d.ts",
+  "scripts": {
+    "build": "tsup src --dts"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheReal-Flo/react-use-local-storage-state.git"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "hook",
+    "localstorage",
+    "state"
+  ],
+  "author": "Florian Reintgen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheReal-Flo/react-use-local-storage-state/issues"
+  },
+  "homepage": "https://github.com/TheReal-Flo/react-use-local-storage-state#readme",
+  "dependencies": {
+    "react": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.2",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
+  }
+}
