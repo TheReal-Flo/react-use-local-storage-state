@@ -1,9 +1,27 @@
 import { useState, useEffect } from "react";
 
-export function createLocalStorageStateHook<T>(key: string, initialValue: T | (() => T)) {
-  return function useCustomLocalStorageState(): [T, React.Dispatch<React.SetStateAction<T>>] {
+export function createLocalStorageStateHook<T>(
+  key: string,
+  initialValue: T | (() => T)
+) {
+  return function useCustomLocalStorageState(): [
+    T,
+    React.Dispatch<React.SetStateAction<T>>,
+    { isPersistent: boolean }
+  ] {
     return useLocalStorageState<T>(key, initialValue);
   };
+}
+
+function isLocalStorageAvailable(): boolean {
+  try {
+    const testKey = "__test__";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -12,16 +30,16 @@ export function createLocalStorageStateHook<T>(key: string, initialValue: T | ((
  *
  * @param key - The localStorage key to use.
  * @param initialValue - The initial value or a function returning the initial value.
- * @returns [state, setState] - Just like useState.
+ * @returns [state, setState, { isPersistent }] - Just like useState, and aditionally a boolean if the value is persistent.
  */
 function useLocalStorageState<T>(
   key: string,
   initialValue: T | (() => T)
-): [T, React.Dispatch<React.SetStateAction<T>>] {
-  // Helper to get the initial value from localStorage or fallback
+): [T, React.Dispatch<React.SetStateAction<T>>, { isPersistent: boolean }] {
+  const persistent = typeof window !== "undefined" && isLocalStorageAvailable();
+
   const getStoredValue = (): T => {
-    if (typeof window === "undefined") {
-      // SSR fallback
+    if (!persistent) {
       return typeof initialValue === "function"
         ? (initialValue as () => T)()
         : initialValue;
@@ -32,7 +50,7 @@ function useLocalStorageState<T>(
         return JSON.parse(item) as T;
       }
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+      console.error("useLocalStorageState error", error);
     }
     return typeof initialValue === "function"
       ? (initialValue as () => T)()
@@ -42,14 +60,16 @@ function useLocalStorageState<T>(
   const [state, setState] = useState<T>(getStoredValue);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(state));
-    } catch (error) {
-      console.warn(`Error setting localStorage key "${key}":`, error);
+    if (persistent) {
+      try {
+        window.localStorage.setItem(key, JSON.stringify(state));
+      } catch {
+        // ignore
+      }
     }
-  }, [key, state]);
+  }, [key, state, persistent]);
 
-  return [state, setState];
+  return [state, setState, { isPersistent: persistent }];
 }
 
 export default useLocalStorageState;
