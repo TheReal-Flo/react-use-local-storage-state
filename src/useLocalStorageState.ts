@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
 
+export function createLocalStorageStateHook<T>(key: string, initialValue: T | (() => T)) {
+  return function useCustomLocalStorageState(): [T, React.Dispatch<React.SetStateAction<T>>] {
+    return useLocalStorageState<T>(key, initialValue);
+  };
+}
+
 /**
  * useLocalStorageState
  * A React hook that persists state to localStorage.

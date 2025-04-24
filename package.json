@@ -1,6 +1,6 @@
 {
   "name": "react-use-local-storage-state",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Like useState, but it also saves in localStorage",
   "main": "dist/useLocalStorageState.js",
   "module": "dist/useLocalStorageState.js",
